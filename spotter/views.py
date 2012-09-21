@@ -172,7 +172,7 @@ def twilio_sms(request):
         # Does the body match a code?
         if body:
             try:
-                user = Spotter.objects.get(phone_number_token = body)
+                user = Spotter.objects.get(phone_number_token = body.lower())
             except Spotter.DoesNotExist:
                 return HttpResponse('')
             user.phone_number = number
