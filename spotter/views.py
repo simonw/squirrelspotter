@@ -58,6 +58,12 @@ def spotted(request):
         'access_token': user.fb_access_token,
         'squirrel': 'http://www.squirrelspotter.com/spot/%s/' % spot.pk,
     })
+
+    # Update their score too
+    requests.post('https://graph.facebook.com/me/scores', {
+        'access_token': user.fb_access_token,
+        'score': user.spots.count(),
+    }, timeout=2)
     return HttpResponseRedirect('/spot/%s/' % spot.pk)
 
 def robots_txt(request):

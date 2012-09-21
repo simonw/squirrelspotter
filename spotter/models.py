@@ -19,7 +19,7 @@ class Spotter(models.Model):
 
 class Spot(models.Model):
     created = models.DateTimeField(default = datetime.datetime.utcnow)
-    spotter = models.ForeignKey(Spotter)
+    spotter = models.ForeignKey(Spotter, related_name = 'spots')
     latitude = models.CharField(max_length = 32)
     longitude = models.CharField(max_length = 32)
     geohash = models.CharField(max_length = 16)
