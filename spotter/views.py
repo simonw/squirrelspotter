@@ -1,21 +1,43 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from common.shortcuts import render
-from spotter.models import Spotter
+from django.shortcuts import get_object_or_404
+from spotter.models import Spotter, Spot
 from django.conf import settings
 from django.core.signing import Signer
+from django.views.decorators.csrf import csrf_protect
 import urllib, requests, cgi, datetime, json
+import geohash
 
 signer = Signer()
 
 REDIRECT_URI = 'http://thawing-earth-2731.herokuapp.com/login/done/'
 
+@csrf_protect
 def index(request):
     return render(request, 'index.html', {
         'user': user_from_request(request),
     })
 
 def spot(request, id):
-    return HttpResponse("Spot %s" % id)
+    spot = get_object_or_404(Spot, pk = id)
+    return HttpResponse(str(spot.__dict__), content_type='text/plain')
+
+@csrf_protect
+def spotted(request):
+    user = user_from_request(request)
+    assert user
+    latitude = request.POST['latitude']
+    longitude = request.POST['longitude']
+    coords_json = request.POST['coords_json']
+    coords_geohash = geohash.encode(float(latitude), float(longitude))
+    spot = Spot.objects.create(
+        spotter = user,
+        latitude = latitude,
+        longitude = longitude,
+        coords_json = coords_json,
+        geohash = coords_geohash
+    )
+    return HttpResponseRedirect('/spot/%s/' % spot.pk)
 
 def robots_txt(request):
     return HttpResponse(
