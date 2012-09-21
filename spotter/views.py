@@ -12,3 +12,6 @@ def robots_txt(request):
         "User-agent: *\nDisallow: /",
         content_type = 'text/plain'
     )
+
+def channel_html(request):
+	return HttpResponse('<script src="//connect.facebook.net/en_US/all.js"></script>')
