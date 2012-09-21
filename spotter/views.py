@@ -176,7 +176,10 @@ def twilio_sms(request):
             try:
                 user = Spotter.objects.get(phone_number_token = body.lower())
             except Spotter.DoesNotExist:
-                return HttpResponse('')
+                return HttpResponse('''<?xml version="1.0" encoding="UTF-8"?>
+                <Response>
+                    <Sms from="+442033221149" to="%s">%s is an invalid verification code.</Sms>
+                </Response>''' % (number, body.lower()))
             user.phone_number = number
             user.save()
             return HttpResponse("""
@@ -186,7 +189,10 @@ def twilio_sms(request):
                 </Response>
             """ % (number, user.name))
         else:
-            return HttpResponse('')
+            return HttpResponse('''<?xml version="1.0" encoding="UTF-8"?>
+                <Response>
+                    <Sms from="+442033221149" to="%s">You need to send a verification code for your accent.</Sms>
+                </Response>''' % number)
 
 def twilio_sms_from_user(user, body):
     location = geocode(body)
