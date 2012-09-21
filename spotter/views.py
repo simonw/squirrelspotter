@@ -60,6 +60,8 @@ def spotted(request):
         pks.append(spot.pk)
         transaction.commit() # So facebook crawler can see it
     
+    inner()
+    
     pk = pks[0]
 
     requests.post('https://graph.facebook.com/me/squirrelspotter:spot', {
