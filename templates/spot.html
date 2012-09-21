@@ -12,14 +12,13 @@
 
 {% block content %}
 
-{% if is_owner %}
-	<h1>You spotted a squirrel!</h1>
-{% else %}
-	<h1>{{ spot.spotter.name }} spotted a squirrel!</h1>
-{% endif %}
+<div class="page">
+        <h1 class="spot-text">{% if is_owner %}You spotted a squirrel!{% else %}{{ spot.spotter.name }} spotted a squirrel!{% endif %}</h1>
 
-<p>At {{ spot.created }}</p>
+        <div class="spot-container">
+        <p>{{ spot.created }}</p>
 
-<p><small>{{ spot.latitude }}, {{ spot.longitude }} {{ spot.location_name }}</small></p>
+        <p>Spotted at {% if spot.location_name %}{{ spot.location_name }}{% endif %} <span class="meta">{{ spot.longitude }} {{ spot.location_name }}</span></p>
+ </div>
 
 {% endblock %}
