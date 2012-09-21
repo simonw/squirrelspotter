@@ -6,6 +6,8 @@ OUR_ROOT = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..')
 )
 
+FB_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
