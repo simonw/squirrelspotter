@@ -14,7 +14,7 @@ FB.Event.subscribe('auth.login', function(response) {
 
 	<div id="login-flow">
 		<h1>Squirrel spotter!</h1>
-		<fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button>
+		<div class="fb-login-button" data-show-faces="true" data-width="200" data-max-rows="1" data-perms="email,publish_actions"></div>
 	</div>
 
 {% endblock %}
