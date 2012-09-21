@@ -1,7 +1,9 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from common.shortcuts import render
 from django.conf import settings
-import urllib
+import urllib, requests
+
+REDIRECT_URI = 'http://thawing-earth-2731.herokuapp.com/login/done/'
 
 def index(request):
     return render(request, 'index.html')
@@ -21,7 +23,17 @@ def channel_html(request):
 def login(request):
     fb_login_uri = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode({
         'client_id': settings.FB_APP_ID,
-        'redirect_uri': 'http://thawing-earth-2731.herokuapp.com/login/done/',
+        'redirect_uri': REDIRECT_URI,
         'scope': 'email,publish_actions',
     })
     return HttpResponseRedirect(fb_login_uri)
+
+def done(request):
+    code = request.GET['code']
+    url = "https://graph.facebook.com/oauth/access_token?" + urllib.urlencode({
+        'client_id': settings.FB_APP_ID,
+        'redirect_uri': REDIRECT_URI,
+        'client_secret': settings.FB_APP_SECRET,
+        'code': code
+    })
+    return HttpResponse(str(requests.get(url)))

@@ -7,6 +7,7 @@ OUR_ROOT = os.path.realpath(
 )
 
 FB_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+FB_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET')
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
