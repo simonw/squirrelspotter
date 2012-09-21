@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404
 from spotter.models import Spotter, Spot
 from django.conf import settings
 from django.core.signing import Signer, BadSignature
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+
 from django.db import transaction
 from xml.etree import ElementTree as ET
 import urllib, requests, cgi, datetime, json
@@ -162,6 +163,7 @@ def reverse_geocode(latitude, longitude):
             return v
     return None
 
+@csrf_exempt
 def twilio_sms(request):
     number = request.POST['From']
     body = request.POST['Body']
