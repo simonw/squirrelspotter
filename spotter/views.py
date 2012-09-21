@@ -5,6 +5,7 @@ from spotter.models import Spotter, Spot
 from django.conf import settings
 from django.core.signing import Signer, BadSignature
 from django.views.decorators.csrf import csrf_protect
+from django.db import transaction
 from xml.etree import ElementTree as ET
 import urllib, requests, cgi, datetime, json
 import geohash
@@ -36,6 +37,7 @@ def debug(request):
     return HttpResponse(repr(user.__dict__ if user else None), content_type='text/plain')
 
 @csrf_protect
+@transaction.commit_manually
 def spotted(request):
     user = user_from_request(request)
     assert user
@@ -51,6 +53,11 @@ def spotted(request):
         geohash = coords_geohash,
         location_name = reverse_geocode(latitude, longitude),
     )
+    transaction.commit() # So facebook crawler can see it
+    requests.post('https://graph.facebook.com/me/squirrelspotter:spot', {
+        'access_token': user.fb_access_token,
+        'squirrel': 'http://www.squirrelspotter.com/spot/%s/' % spot.pk,
+    })
     return HttpResponseRedirect('/spot/%s/' % spot.pk)
 
 def robots_txt(request):

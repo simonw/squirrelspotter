@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block extra_head %}
+<meta content="{{ spot.spotter.name }} spotted a squirrel!" property="og:title" />
+<meta content="squirrelspotter:squirrel" property="og:type" />
+<meta content="http://squirrelspotter-assets.s3-external-3.amazonaws.com/2012/squirrel.png" property="og:image" />
+<meta property="og:description" content="My First App" />
 {% endblock %}
 
 {% block content %}
