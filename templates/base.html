@@ -14,9 +14,6 @@
 
     <meta content="{{ app_id }}" property="fb:app_id" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-
-  </head>
-  <body>
 <script type="text/javascript">
 window.fbAsyncInit = function() {
     FB.init({
@@ -50,7 +47,8 @@ window.fbAsyncInit = function() {
 }(document, 'script', 'facebook-jssdk'));
 </script>
     {% block extra_head %}{% endblock %}
-
+</head>
+<body>
     {% block content %}
 
     {% endblock %}
