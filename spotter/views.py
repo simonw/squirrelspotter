@@ -194,8 +194,11 @@ def twilio_sms_from_user(user, body):
     location = geocode(body)
     if location:
         spot = create_spot(user, location['latitude'], location['longitude'])
+        location_text = ''
+        if spot.location_name:
+            location_text = ' in %s' % spot.location_name
         return twilio_reply(
-            'Squirrel spotted! http://www.squirrelspotter.com/spot/%s/' % spot.pk
+            'Squirrel spotted%s! http://www.squirrelspotter.com/spot/%s/' % (location_text, spot.pk)
         )
     else:
         return twilio_reply("Sorry, that location didn't work - please try again")
