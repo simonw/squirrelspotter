@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Squirrel spotter!{% endblock %}
+
 {% block extra_head %}
 {% if user %}
 <script>
@@ -27,6 +29,8 @@ jQuery(function($) {
 </script>
 {% endif %}
 {% endblock %}
+
+{% block content %}
 
 {% if not user %}
 	<div id="login-flow">
