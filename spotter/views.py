@@ -165,6 +165,12 @@ def reverse_geocode(latitude, longitude):
 
 @csrf_exempt
 def twilio_sms(request):
+    return HttpResponse("""
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Response>
+            <Sms>Hello from my test reply!</Sms>
+        </Response>
+    """)
     number = request.POST['From']
     body = request.POST['Body']
     try:
