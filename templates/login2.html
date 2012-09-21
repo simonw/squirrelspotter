@@ -2,7 +2,7 @@
 
 {% block extra_facebook_init %}
 FB.Event.subscribe('auth.login', function(response) {
-	if (response.status === 'connected') {
+	if (response.status == 'connected') {
 		window.location = '/login/';
 	}
 });
