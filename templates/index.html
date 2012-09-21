@@ -37,7 +37,7 @@ jQuery(function($) {
 	</div>
 {% else %}
 	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
-		<p id="spotted_button" style="display:none"><input type="image" src="//squirrelspotter-assets.s3-external-3.amazonaws.com/2012/squirrel.png">
+		<p id="spotted_button" style="display:none"><input type="image" src="//squirrelspotter-assets.s3.amazonaws.com/2012/i-saw-a-squirrel.png">
 			<input type="hidden" name="latitude">
 			<input type="hidden" name="longitude">
 			<input type="hidden" name="coords_json">
