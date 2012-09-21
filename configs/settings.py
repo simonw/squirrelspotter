@@ -1,7 +1,10 @@
-# Django settings for squirrel_spotter project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+OUR_ROOT = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), '..')
+)
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -97,9 +100,7 @@ ROOT_URLCONF = 'configs.urls'
 WSGI_APPLICATION = 'configs.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(OUR_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
