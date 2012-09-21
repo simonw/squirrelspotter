@@ -8,15 +8,17 @@ jQuery(function($) {
 		$('input[name="latitude"]').val(position.coords.latitude);
 		$('input[name="longitude"]').val(position.coords.longitude);
 		$('input[name="coords_json"]').val(JSON.stringify(position.coords));
+		$('#spotted_button').show();
+		$('#locating').show();
 	}
 	function error(msg) {
-	    alert(msg);
+	    $('#locating').html(msg);
 	}
 
 	if (navigator.geolocation) {
 	    navigator.geolocation.getCurrentPosition(success, error);
 	} else {
-	    jQuery('#spotted_form').html('not supported');
+	    $('#locating').html('Geolocation not supported, sorry!');
 	}
 });
 </script>
@@ -32,18 +34,17 @@ jQuery(function($) {
 	</div>
 {% else %}
 	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
-		<p><input type="image" src="//squirrelspotter-assets.s3-external-3.amazonaws.com/2012/squirrel.png">
+		<p id="spotted_button" style="display:none"><input type="image" src="//squirrelspotter-assets.s3-external-3.amazonaws.com/2012/squirrel.png">
 			<input type="hidden" name="latitude">
 			<input type="hidden" name="longitude">
 			<input type="hidden" name="coords_json">
 		</p>
+		<p id="locating">Locating...</p>
 	</form>
 {% endif %}
 
 {% if user %}
 <pre>{{ user.fb_json }}</pre>
 {% endif %}
-
-<div id="middle"></div>
 
 {% endblock %}
