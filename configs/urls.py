@@ -1,5 +1,7 @@
-from django.conf.urls import patterns, url #, include
+from django.conf.urls import patterns, url, include
 from django.conf import settings
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'spotter.views.index'),
@@ -11,4 +13,6 @@ urlpatterns = patterns('',
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.STATIC_ROOT
     }),
+
+    (r'^admin-peeps/', include(admin.site.urls)),
 )
