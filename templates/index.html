@@ -33,9 +33,8 @@ jQuery(function($) {
 {% if not user %}
 	<div id="login-flow">
 		<h1>Squirrel spotter!</h1>
-		<!-- <fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button -->
-		<p><center><a href="/login/"><img src="http://www.bebo.com/img/facebook-login.png"></a></center></p>
-
+		<div class="fb-login-button" data-show-faces="true" data-width="200" data-max-rows="1" data-perms="email,publish_actions"></div>
+		<p class="hide-me"><center><a href="/login/"><img src="http://lanyrd-team-screenshots.s3.amazonaws.com/www.squirrelspotter.com_login2_-20120921-200640.png" alt="Log In with Facebook"></a></center></p>
 	</div>
 {% else %}
 	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
