@@ -47,11 +47,33 @@ window.fbAsyncInit = function() {
 }(document, 'script', 'facebook-jssdk'));
 </script>
     {% block extra_head %}{% endblock %}
+       <style type="text/css">
+        .page {
+            width:320px;
+            max-width: 100%;
+            margin: 20% auto  0 auto;
+        }
+        #spotted_button input {
+            opacity: 0.9;
+            max-width: 100%;
+        }
+        #spotted_button input:hover,
+        #spotted_button input:active {
+            opacity: 1;
+        }
+        @media screen and (max-width: 500px) {
+            .page {
+                margin-top: 8%;
+            }
+        }
+    </style>
+[21/09/2012 18:04:35] Natalie Downe: that looks good on mobile too
 </head>
 <body>
+    <div class="page">
     {% block content %}
 
     {% endblock %}
-    
+    </div>
   </body>
 </html>
