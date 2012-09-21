@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'spotter.views.login'),
     url(r'^login/done/$', 'spotter.views.done'),
     url(r'^spot/(\d+)/$', 'spotter.views.spot'),
+    url(r'^spotted/$', 'spotter.views.spotted'),
     url(r'^robots\.txt$', 'spotter.views.robots_txt'),
     url(r'^channel\.html$', 'spotter.views.channel_html'),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
