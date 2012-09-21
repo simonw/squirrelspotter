@@ -3,7 +3,7 @@ from common.shortcuts import render
 from django.shortcuts import get_object_or_404
 from spotter.models import Spotter, Spot
 from django.conf import settings
-from django.core.signing import Signer
+from django.core.signing import Signer, BadSignature
 from django.views.decorators.csrf import csrf_protect
 import urllib, requests, cgi, datetime, json
 import geohash
@@ -93,7 +93,7 @@ def user_from_request(request):
     cookie = request.COOKIES.get('u', '')
     try:
         pk = signer.unsign(cookie)
-    except ValueError:
+    except BadSignature:
         return None
     try:
         return Spotter.objects.get(pk = pk)
