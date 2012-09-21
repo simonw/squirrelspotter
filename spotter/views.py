@@ -47,7 +47,7 @@ def done(request):
     expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds = expires)
 
     # Look up their details
-    fb_json = requests.get('https://graph.facebook.com/me?access_token=%s' % access_token)
+    fb_json = requests.get('https://graph.facebook.com/me?access_token=%s' % access_token).text
     name = json.loads(fb_json)['name']
     fb_id = json.loads(fb_json)['id']
 
