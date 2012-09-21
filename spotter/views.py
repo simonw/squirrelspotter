@@ -10,7 +10,7 @@ import geohash
 
 signer = Signer()
 
-REDIRECT_URI = 'http://thawing-earth-2731.herokuapp.com/login/done/'
+REDIRECT_URI = 'http://%s/login/done/'
 
 @csrf_protect
 def index(request):
@@ -63,7 +63,7 @@ def channel_html(request):
 def login(request):
     fb_login_uri = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode({
         'client_id': settings.FB_APP_ID,
-        'redirect_uri': REDIRECT_URI,
+        'redirect_uri': REDIRECT_URI % request.META['HTTP_HOST'],
         'scope': 'email,publish_actions',
     })
     return HttpResponseRedirect(fb_login_uri)
@@ -72,7 +72,7 @@ def done(request):
     code = request.GET['code']
     url = "https://graph.facebook.com/oauth/access_token?" + urllib.urlencode({
         'client_id': settings.FB_APP_ID,
-        'redirect_uri': REDIRECT_URI,
+        'redirect_uri': REDIRECT_URI % request.META['HTTP_HOST'],
         'client_secret': settings.FB_APP_SECRET,
         'code': code
     })
