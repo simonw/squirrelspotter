@@ -4,12 +4,16 @@
 {% if user %}
 <script>
 jQuery(function($) {
+	var button_shown = false;
 	function success(position) {
 		$('input[name="latitude"]').val(position.coords.latitude);
 		$('input[name="longitude"]').val(position.coords.longitude);
 		$('input[name="coords_json"]').val(JSON.stringify(position.coords));
-		$('#spotted_button').show();
-		$('#locating').hide();
+		if (!button_shown) {
+			button_shown = true;
+			$('#spotted_button').show();
+			$('#locating').hide();
+		}
 	}
 	function error(msg) {
 	    $('#locating').html(msg);
