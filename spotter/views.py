@@ -37,6 +37,19 @@ def debug(request):
     user = user_from_request(request)
     return HttpResponse(repr(user.__dict__ if user else None), content_type='text/plain')
 
+@transaction.commit_manually
+def create_spot(user, latitude, longitude, coords_json=''):
+    spot = Spot.objects.create(
+        spotter = user,
+        latitude = latitude,
+        longitude = longitude,
+        coords_json = coords_json,
+        geohash = geohash.encode(float(latitude), float(longitude)),
+        location_name = reverse_geocode(latitude, longitude),
+    )
+    transaction.commit() # So facebook crawler can see it
+    return spot
+
 @csrf_protect
 def spotted(request):
     user = user_from_request(request)
@@ -44,25 +57,8 @@ def spotted(request):
     latitude = request.POST['latitude']
     longitude = request.POST['longitude']
     coords_json = request.POST['coords_json']
-    coords_geohash = geohash.encode(float(latitude), float(longitude))
 
-    pks = []
-    @transaction.commit_manually
-    def inner():
-        spot = Spot.objects.create(
-            spotter = user,
-            latitude = latitude,
-            longitude = longitude,
-            coords_json = coords_json,
-            geohash = coords_geohash,
-            location_name = reverse_geocode(latitude, longitude),
-        )
-        pks.append(spot.pk)
-        transaction.commit() # So facebook crawler can see it
-    
-    inner()
-    
-    pk = pks[0]
+    pk = create_spot(user, latitude, longitude, coords_json).pk
 
     requests.post('https://graph.facebook.com/me/squirrelspotter:spot', {
         'access_token': user.fb_access_token,
@@ -165,3 +161,65 @@ def reverse_geocode(latitude, longitude):
         if v:
             return v
     return None
+
+def twilio_sms(request):
+    number = request.POST['From']
+    body = request.POST['Body']
+    try:
+        user = Spotter.objects.get(phone_number = number)
+        return twilio_sms_from_user(user, body)
+    except Spotter.DoesNotExist:
+        # Does the body match a code?
+        if body:
+            try:
+                user = Spotter.objects.get(phone_number_token = body)
+            except Spotter.DoesNotExist:
+                return HttpResponse('')
+            user.phone_number = number
+            user.save()
+            return HttpResponse("""
+                <?xml version="1.0" encoding="UTF-8"?>
+                <Response>
+                    <Sms from="+442033221149" to="%s">Hello %s! You can now report squirrels by texting a location to this number.</Sms>
+                </Response>
+            """ % (number, user.name))
+        else:
+            return HttpResponse('')
+
+def twilio_sms_from_user(user, body):
+    location = geocode(body)
+    if location:
+        spot = create_spot(user, location['latitude'], location['longitude'])
+        return HttpResponse("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <Response>
+                <Sms from="+442033221149" to="%s">Squirrel spotted! http://www.squirrelspotter.com/spot/%s/</Sms>
+            </Response>
+        """ % (user.phone_number, spot.pk))
+    else:
+        return HttpResponse("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <Response>
+                <Sms from="+442033221149" to="%s">Sorry, that location didn't work - please try again</Sms>
+            </Response>
+        """ % user.phone_number)
+
+def geocode(text):
+    url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
+        "q": text,
+        "appid": "[yourappidhere]",
+    })
+    try:
+        et = ET.fromstring(requests.get(url, timeout=3).text)
+    except Exception, e:
+        return None
+
+    if et.find('Error').text != '0':
+        return None
+
+    latitude = et.find('Result/latitude').text
+    longitude = et.find('Result/latitude').text
+    return {
+        'latitude': latitude,
+        'longitude': longitude,
+    }
