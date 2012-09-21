@@ -47,9 +47,9 @@ jQuery(function($) {
 		<p id="locating">Locating...</p>
 	</form>
 	{% if not user.phone_number %}
-		<p>Text <strong>{{ user.phone_number_token }}</strong> to <a href="tel:+442033221149">+44 203 322 1149</a> to register your number and you'll be able to report squirrels by text message!</p>
+		<p class="number"><span class="instructions">Text <strong>{{ user.phone_number_token }}</strong> to <a href="tel:+442033221149">+44 203 322 1149</a></span> This will register your number and you'll be able to report squirrels by text message!</p>
 	{% else %}
-		<p>Or text <a href="tel:+442033221149">+44 203 322 1149</a> and tell us where you saw the squirrel!</p>
+		<p class="number">Or text <a href="tel:+442033221149">+44 203 322 1149</a> and tell us where you saw the squirrel!</p>
 	{% endif %}
 {% endif %}
 
