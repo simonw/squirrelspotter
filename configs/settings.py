@@ -1,6 +1,6 @@
 import os
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 OUR_ROOT = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..')
