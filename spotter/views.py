@@ -10,7 +10,9 @@ signer = Signer()
 REDIRECT_URI = 'http://thawing-earth-2731.herokuapp.com/login/done/'
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {
+        'user': user_from_request(request),
+    })
 
 def spot(request, id):
     return HttpResponse("Spot %s" % id)
@@ -64,3 +66,14 @@ def done(request):
     response = HttpResponseRedirect('/')
     response.set_cookie('u', signer.sign(spotter.pk))
     return response
+
+def user_from_request(request):
+    cookie = request.COOKIES.get('u', '')
+    try:
+        pk = signer.unsign(cookie)
+    except ValueError:
+        return None
+    try:
+        return Spotter.objects.get(pk = pk)
+    except Spotter.DoesNotExist:
+        return None

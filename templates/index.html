@@ -8,4 +8,9 @@
   </div>
 
   <button id="postToWall">Post to wall</button>
+
+  {% if user %}
+  	<pre>{{ user.fb_json }}</pre>
+  {% endif %}
+
 {% endblock %}
