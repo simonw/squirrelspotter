@@ -102,6 +102,12 @@ def login(request):
     })
     return HttpResponseRedirect(fb_login_uri)
 
+def logout(request):
+    response = HttpResponseRedirect('/')
+    response.set_cookie('logged_out', 1)
+    response.delete_cookie('u')
+    return response
+
 def done(request):
     code = request.GET['code']
     url = "https://graph.facebook.com/oauth/access_token?" + urllib.urlencode({
@@ -133,6 +139,7 @@ def done(request):
 
     response = HttpResponseRedirect('/')
     response.set_cookie('u', signer.sign(spotter.pk))
+    response.delete_cookie('logged_out')
     return response
 
 def user_from_request(request):

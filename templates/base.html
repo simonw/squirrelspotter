@@ -27,7 +27,9 @@ window.fbAsyncInit = function() {
     // autologin
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
+            {% if not forced_logged_out %}
             window.location = '/login/';
+            {% endif %}
         }
         /* else if (response.status === 'not_authorized') {
             // Show them the facebook button

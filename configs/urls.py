@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^debug/$', 'spotter.views.debug'),
     url(r'^scores/$', 'spotter.views.scores'),
     url(r'^login/done/$', 'spotter.views.done'),
+    url(r'^logout/$', 'spotter.views.logout'),
 
     url(r'^spot/(\d+)/$', 'spotter.views.spot'),
     url(r'^spotted/$', 'spotter.views.spotted'),
