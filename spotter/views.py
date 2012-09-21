@@ -36,4 +36,5 @@ def done(request):
         'client_secret': settings.FB_APP_SECRET,
         'code': code
     })
-    return HttpResponse(str(requests.get(url)))
+    r = requests.get(url)
+    return HttpResponse(str(r.text))
