@@ -5,6 +5,7 @@ from spotter.models import Spotter, Spot
 from django.conf import settings
 from django.core.signing import Signer, BadSignature
 from django.views.decorators.csrf import csrf_protect
+from xml.etree import ElementTree as ET
 import urllib, requests, cgi, datetime, json
 import geohash
 
@@ -47,7 +48,8 @@ def spotted(request):
         latitude = latitude,
         longitude = longitude,
         coords_json = coords_json,
-        geohash = coords_geohash
+        geohash = coords_geohash,
+        location_name = reverse_geocode(latitude, longitude),
     )
     return HttpResponseRedirect('/spot/%s/' % spot.pk)
 
@@ -111,3 +113,21 @@ def user_from_request(request):
         return Spotter.objects.get(pk = pk)
     except Spotter.DoesNotExist:
         return None
+
+def reverse_geocode(latitude, longitude):
+    url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
+        "q": "%s,%s" % (latitude, longitude),
+        "gflags": "R",
+        "appid": "[yourappidhere]",
+    })
+    try:
+        et = ET.fromstring(requests.get(url, timeout=3).text)
+        d = dict([(e.tag, e.text) for e in et.find('Result')])
+    except Exception, e:
+        return None
+    prefs = ('neighborhood', 'city', 'county', 'state', 'country')
+    for pref in prefs:
+        v = d.get(pref)
+        if v:
+            return v
+    return None
