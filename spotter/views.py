@@ -102,6 +102,9 @@ def login(request):
     })
     return HttpResponseRedirect(fb_login_uri)
 
+def login2(request):
+    return render(request, 'login2.html')
+
 def logout(request):
     response = HttpResponseRedirect('/')
     response.set_cookie('logged_out', 1)

@@ -6,6 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'spotter.views.index'),
     url(r'^login/$', 'spotter.views.login'),
+    url(r'^login2/$', 'spotter.views.login2'),
     url(r'^debug/$', 'spotter.views.debug'),
     url(r'^scores/$', 'spotter.views.scores'),
     url(r'^login/done/$', 'spotter.views.done'),

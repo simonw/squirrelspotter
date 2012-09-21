@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<script>
+FB.Event.subscribe('auth.login', function(response) {
+	if (response.status === 'connected') {
+		window.location = '/login/';
+	}
+});
+</script>
+{% endblock %}
+
+{% block content %}
+
+	<div id="login-flow">
+		<h1>Squirrel spotter!</h1>
+		<fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button>
+	</div>
+
+{% endblock %}
