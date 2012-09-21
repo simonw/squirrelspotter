@@ -6,6 +6,7 @@ class Spotter(models.Model):
     name = models.CharField(max_length = 128)
     fb_id = models.CharField(max_length = 128)
     fb_access_token = models.CharField(max_length = 128)
+    fb_access_token_expires = models.DateTimeField(null = True, blank = True)
     phone_number = models.CharField(max_length = 50, blank=True, null=True)
     phone_number_token = models.CharField(max_length = 50, blank=True, null=True)
 

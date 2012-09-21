@@ -19,6 +19,15 @@ DATABASES = {
     'default': dj_database_url.config(default='postgres://localhost')
 }
 
+if not os.environ.get('HEROKU_POSTGRESQL_NAVY_URL'):
+    DATABASES = {
+        'default': {
+            'NAME': 'squirrelspotter',
+            'HOST': '',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        }
+    }
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -115,6 +124,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     
     'spotter',
+    'south',
 )
 
 # A sample logging configuration. The only tangible logging
