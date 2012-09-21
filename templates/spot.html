@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+
+{% if is_owner %}
+	<h1>You spotted a squirrel!</h1>
+{% else %}
+	<h1>{{ spot.spotter.name }} spotted a squirrel!</h1>
+{% endif %}
+
+<p>At {{ spot.created }}</p>
+
+<p><small>{{ spot.latitude }}, {{ spot.longitude }}</small></p>
+
+{% endblock %}

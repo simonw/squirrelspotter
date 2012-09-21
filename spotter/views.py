@@ -20,7 +20,15 @@ def index(request):
 
 def spot(request, id):
     spot = get_object_or_404(Spot, pk = id)
-    return HttpResponse(str(spot.__dict__), content_type='text/plain')
+    user = user_from_request(request)
+    is_new = datetime.datetime.utcnow() < spot.created + datetime.timedelta(seconds = 60)
+    is_owner = spot.spotter == user
+    return render(request, 'spot.html', {
+        'spot': spot,
+        'user': user,
+        'is_new': is_new,
+        'is_owner': is_owner,
+    })
 
 def debug(request):
     user = user_from_request(request)
