@@ -22,6 +22,10 @@ def spot(request, id):
     spot = get_object_or_404(Spot, pk = id)
     return HttpResponse(str(spot.__dict__), content_type='text/plain')
 
+def debug(request):
+    user = user_from_request(request)
+    return HttpResponse(repr(user.__dict__ if user else None), content_type='text/plain')
+
 @csrf_protect
 def spotted(request):
     user = user_from_request(request)
