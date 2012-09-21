@@ -68,3 +68,9 @@ Twilio stuff:
 15. Text "Unsubscribe" to turn that feature off again
 
 "Simon Willison spotted a squirrel! In Finsbury Park"
+
+And maybe... let people respond to spotted squirrels
+- Ben doubts Simon's squirrel spot
+- Nat congratulates Simon's squirrel spot
+
+OMG... how about region-specific squirrel pictures? E.g. a London squirrel, a France squirrel etc...
