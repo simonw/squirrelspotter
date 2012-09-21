@@ -19,7 +19,7 @@ def channel_html(request):
     return HttpResponse('<script src="//connect.facebook.net/en_US/all.js"></script>')
 
 def login(request):
-    fb_login_uri = "https://www.facebook.com/dialog/oauth?" + urlib.urlencode({
+    fb_login_uri = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode({
         'client_id': settings.FB_APP_ID,
         'redirect_uri': 'http://thawing-earth-2731.herokuapp.com/login/done/',
         'scope': 'email,publish_actions',
