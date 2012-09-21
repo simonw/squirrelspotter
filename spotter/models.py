@@ -13,7 +13,7 @@ class Spotter(models.Model):
 
     first_login = models.DateTimeField(null = True, blank = True)
     last_login = models.DateTimeField(null = True, blank = True)
-    
+
     def __unicode__(self):
         return self.name
 
@@ -23,6 +23,7 @@ class Spot(models.Model):
     latitude = models.CharField(max_length = 32)
     longitude = models.CharField(max_length = 32)
     geohash = models.CharField(max_length = 16)
+    coords_json = models.TextField()
     location_name = models.CharField(max_length = 64, blank=True)
     #comment = 
 
