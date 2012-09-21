@@ -4,6 +4,7 @@
 <meta content="" property="og:title" />
 <meta content="squirrelspotter:squirrel" property="og:type" />
 <meta content="http://squirrelspotter-assets.s3-external-3.amazonaws.com/2012/squirrel.png" property="og:image" />
+<meta content="http://www.squirrelspotter.com/spot/{{ spot.pk }}/" property="og:url" />
 <meta property="og:description" content="{{ spot.spotter.name }} spotted a squirrel{% if spot.location_name %} in {{ spot.location_name }}{% endif %}!" />
 {% endblock %}
 
