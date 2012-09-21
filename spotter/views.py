@@ -217,7 +217,7 @@ def geocode(text):
         return None
 
     latitude = et.find('Result/latitude').text
-    longitude = et.find('Result/latitude').text
+    longitude = et.find('Result/longitude').text
     return {
         'latitude': latitude,
         'longitude': longitude,
