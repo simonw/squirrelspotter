@@ -38,6 +38,7 @@ window.fbAsyncInit = function() {
         } */
     });
     {% endif %}
+    {% block extra_facebook_init %}{% endblock %}
 };
 // Load the SDK Asynchronously
 (function(d, s, id) {
