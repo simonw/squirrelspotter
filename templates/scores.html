@@ -12,6 +12,26 @@
 
 {% endblock %}
 
+<div class="page">
+    <h1>Squirrel scoreboard</h1>
+
+    {% if not scores.data %}
+    	<p>None of your friends have spotted a squirrel :(</p>
+    {% endif %}
+    
+    <div class="score-container">
+        <table border="0" cellspacing="0" cellpadding="0">
+        	{% for score in scores.data %}
+            <tr>
+                <td>{{ score.user.name }}</td>
+                <td><strong>{{ score.score }}</strong> squirrel{{ score.score|pluralize }}!</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
 {% comment %}
 {u'data': [{u'application': {u'id': u'468132099884285',
     u'name': u'Squirrel Spotter',
