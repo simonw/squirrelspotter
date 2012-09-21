@@ -195,6 +195,15 @@ def twilio_sms(request):
                 </Response>''')
 
 def twilio_sms_from_user(user, body):
+    # We don't geocode anything that's a phone_number_token
+    if Spotter.objects.filter(phone_number_token = body.lower()).exists():
+        return HttpResponse("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <Response>
+                <Sms>You have already sent us your registration code!</Sms>
+            </Response>
+        """)
+
     location = geocode(body)
     if location:
         spot = create_spot(user, location['latitude'], location['longitude'])
@@ -213,10 +222,6 @@ def twilio_sms_from_user(user, body):
         """)
 
 def geocode(text):
-    # We don't geocode anything that's a phone_number_token
-    if Spotter.objects.filter(phone_number_token = text.lower()).exists():
-        return None
-
     url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
         "q": text,
         "appid": "[yourappidhere]",
