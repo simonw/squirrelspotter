@@ -13,6 +13,7 @@ import geohash
 signer = Signer()
 
 REDIRECT_URI = 'http://%s/login/done/'
+SCORES_URL = 'https://graph.facebook.com/%s/scores' % settings.FB_APP_ID
 
 @csrf_protect
 def index(request):
@@ -65,6 +66,18 @@ def spotted(request):
         'score': user.spots.count(),
     }, timeout=2)
     return HttpResponseRedirect('/spot/%s/' % spot.pk)
+
+def scores(request):
+    user = user_from_request(request)
+    if not user:
+        return HttpResponseRedirect('/login/')
+    scores = requests.get(SCORES_URL + '?' + urllib.urlencode({
+        'access_token': user.fb_access_token
+    })).json
+    return render(request, 'scores.html', {
+        'user': user,
+        'scores': scores,
+    })
 
 def robots_txt(request):
     return HttpResponse(
