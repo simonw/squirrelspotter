@@ -9,12 +9,11 @@ jQuery(function($) {
 		$('input[name="longitude"]').val(position.coords.longitude);
 		$('input[name="coords_json"]').val(JSON.stringify(position.coords));
 		$('#spotted_button').show();
-		$('#locating').show();
+		$('#locating').hide();
 	}
 	function error(msg) {
 	    $('#locating').html(msg);
 	}
-
 	if (navigator.geolocation) {
 	    navigator.geolocation.getCurrentPosition(success, error);
 	} else {
