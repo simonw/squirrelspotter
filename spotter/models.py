@@ -1,5 +1,5 @@
 from django.db import models
-import datetime
+import datetime, hashlib, random
 
 class Spotter(models.Model):
     created = models.DateTimeField(default = datetime.datetime.utcnow)
@@ -9,7 +9,10 @@ class Spotter(models.Model):
     fb_access_token = models.CharField(max_length = 128)
     fb_access_token_expires = models.DateTimeField(null = True, blank = True)
     phone_number = models.CharField(max_length = 50, blank=True, null=True)
-    phone_number_token = models.CharField(max_length = 50, blank=True, null=True)
+    phone_number_token = models.CharField(
+        max_length = 50, blank=True, null=True,
+        default = lambda: hashlib.sha1(str(random.random())).hexdigest()[:8]
+    )
 
     first_login = models.DateTimeField(null = True, blank = True)
     last_login = models.DateTimeField(null = True, blank = True)
