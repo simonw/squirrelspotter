@@ -1,7 +1,11 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from common.shortcuts import render
+from spotter.models import Spotter
 from django.conf import settings
-import urllib, requests
+from django.core.signing import Signer
+import urllib, requests, cgi, datetime, json
+
+signer = Signer()
 
 REDIRECT_URI = 'http://thawing-earth-2731.herokuapp.com/login/done/'
 
@@ -37,4 +41,26 @@ def done(request):
         'code': code
     })
     r = requests.get(url)
-    return HttpResponse(str(r.text))
+    d = dict(cgi.parse_qsl(r.text))
+    access_token = d['access_token']
+    expires = int(d['expires'])
+    expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds = expires)
+
+    # Look up their details
+    fb_json = requests.get('https://graph.facebook.com/me?access_token=%s' % access_token)
+    name = json.loads(fb_json)['name']
+    fb_id = json.loads(fb_json)['id']
+
+    spotter, created = Spotter.objects.get_or_create(fb_id = fb_id, defaults = {
+        'name': name,
+        'first_login': datetime.datetime.utcnow(),
+    })
+    spotter.fb_json = fb_json
+    spotter.fb_access_token = access_token
+    spotter.fb_access_token_expires = expires_at
+    spotter.last_login = datetime.datetime.utcnow()
+    spotter.save()
+
+    response = HttpResponseRedirect('/')
+    response.set_cookie('u', signer.sign(spotter.pk))
+    return response
