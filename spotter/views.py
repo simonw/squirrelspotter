@@ -38,7 +38,6 @@ def debug(request):
     return HttpResponse(repr(user.__dict__ if user else None), content_type='text/plain')
 
 @csrf_protect
-@transaction.commit_manually
 def spotted(request):
     user = user_from_request(request)
     assert user
@@ -46,26 +45,33 @@ def spotted(request):
     longitude = request.POST['longitude']
     coords_json = request.POST['coords_json']
     coords_geohash = geohash.encode(float(latitude), float(longitude))
-    spot = Spot.objects.create(
-        spotter = user,
-        latitude = latitude,
-        longitude = longitude,
-        coords_json = coords_json,
-        geohash = coords_geohash,
-        location_name = reverse_geocode(latitude, longitude),
-    )
-    transaction.commit() # So facebook crawler can see it
+
+    pks = []
+    @transaction.commit_manually
+    def inner():
+        spot = Spot.objects.create(
+            spotter = user,
+            latitude = latitude,
+            longitude = longitude,
+            coords_json = coords_json,
+            geohash = coords_geohash,
+            location_name = reverse_geocode(latitude, longitude),
+        )
+        pks.append(spot.pk)
+        transaction.commit() # So facebook crawler can see it
+    
+    pk = pks[0]
+
     requests.post('https://graph.facebook.com/me/squirrelspotter:spot', {
         'access_token': user.fb_access_token,
-        'squirrel': 'http://www.squirrelspotter.com/spot/%s/' % spot.pk,
+        'squirrel': 'http://www.squirrelspotter.com/spot/%s/' % pk,
     })
-
     # Update their score too
     requests.post('https://graph.facebook.com/me/scores', {
         'access_token': user.fb_access_token,
         'score': user.spots.count(),
     }, timeout=2)
-    return HttpResponseRedirect('/spot/%s/' % spot.pk)
+    return HttpResponseRedirect('/spot/%s/' % pk)
 
 def scores(request):
     user = user_from_request(request)
