@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 
 {% block extra_head %}
+{% if user %}
 <script>
 jQuery(function($) {
 	function success(position) {
-	    console.log(position.coords.latitude, position.coords.longitude, position);
+		$('input[name="latitude"]').val(position.coords.latitude);
+		$('input[name="longitude"]').val(position.coords.longitude);
+		$('input[name="coords_json"]').val(JSON.stringify(position.coords));
 	}
 	function error(msg) {
 	    alert(msg);
@@ -13,25 +16,33 @@ jQuery(function($) {
 	if (navigator.geolocation) {
 	    navigator.geolocation.getCurrentPosition(success, error);
 	} else {
-	    jQuery('#middle').html('not supported');
+	    jQuery('#spotted_form').html('not supported');
 	}
 });
 </script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
-  <div id="fb-root"></div>
-  <h1>Welcome</h1>
-  <div id="login-flow">
-    <fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button>
-  </div>
 
-  <button id="postToWall">Post to wall</button>
+{% if not user %}
+	<div id="login-flow">
+		<fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button>
+	</div>
+{% else %}
+	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
+		<p><input type="image" src="//squirrelspotter-assets.s3-external-3.amazonaws.com/2012/squirrel.png">
+			<input type="hidden" name="latitude">
+			<input type="hidden" name="longitude">
+			<input type="hidden" name="coords_json">
+		</p>
+	</form>
+{% endif %}
 
-  {% if user %}
-  	<pre>{{ user.fb_json }}</pre>
-  {% endif %}
+{% if user %}
+<pre>{{ user.fb_json }}</pre>
+{% endif %}
 
-  <div id="middle"></div>
+<div id="middle"></div>
 
 {% endblock %}
