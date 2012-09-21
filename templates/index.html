@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<script>
+jQuery(function($) {
+	function success(position) {
+	    console.log(position.coords.latitude, position.coords.longitude, position);
+	}
+	function error(msg) {
+	    alert(msg);
+	}
+
+	if (navigator.geolocation) {
+	    navigator.geolocation.getCurrentPosition(success, error);
+	} else {
+	    jQuery('#middle').html('not supported');
+	}
+});
+</script>
+{% endblock %}
+
 {% block content %}
   <div id="fb-root"></div>
   <h1>Welcome</h1>
@@ -12,5 +31,7 @@
   {% if user %}
   	<pre>{{ user.fb_json }}</pre>
   {% endif %}
+
+  <div id="middle"></div>
 
 {% endblock %}
