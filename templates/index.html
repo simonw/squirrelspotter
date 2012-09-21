@@ -28,21 +28,13 @@ jQuery(function($) {
 {% endif %}
 {% endblock %}
 
-
-{% block extra_facebook_init %}
-FB.Event.subscribe('auth.login', function(response) {
-	if (response.status == 'connected') {
-		window.location = '/login/';
-	}
-});
-{% endblock %}
-{% block content %}
-
 {% if not user %}
 	<div id="login-flow">
 		<h1>Squirrel spotter!</h1>
+		{% comment %}
 		<div class="fb-login-button" data-show-faces="true" data-width="200" data-max-rows="1" data-perms="email,publish_actions"></div>
-		<div class="hide-me"><center><a href="/login/"><img src="http://lanyrd-team-screenshots.s3.amazonaws.com/www.squirrelspotter.com_login2_-20120921-200640.png" alt="Log In with Facebook"></a></center></div>
+		{% endcomment %}
+		<div><center><a href="/login/"><img src="http://lanyrd-team-screenshots.s3.amazonaws.com/www.squirrelspotter.com_login2_-20120921-200640.png" alt="Log In with Facebook"></a></center></div>
 	</div>
 {% else %}
 	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
