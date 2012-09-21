@@ -10,6 +10,7 @@ from django.db import transaction
 from xml.etree import ElementTree as ET
 import urllib, requests, cgi, datetime, json
 import geohash
+from xml.sax.saxutils import escape
 
 signer = Signer()
 
@@ -165,12 +166,8 @@ def reverse_geocode(latitude, longitude):
 
 @csrf_exempt
 def twilio_sms(request):
-    return HttpResponse("""
-        <?xml version="1.0" encoding="UTF-8"?>
-        <Response>
-            <Sms>Hello from my test reply!</Sms>
-        </Response>
-    """)
+    return twilio_reply('Hello from my test reply!')
+    
     number = request.POST['From']
     body = request.POST['Body']
     try:
@@ -182,50 +179,28 @@ def twilio_sms(request):
             try:
                 user = Spotter.objects.get(phone_number_token = body.lower())
             except Spotter.DoesNotExist:
-                return HttpResponse('''<?xml version="1.0" encoding="UTF-8"?>
-                <Response>
-                    <Sms>%s is an invalid verification code.</Sms>
-                </Response>''' % body.lower())
+                return twilio_reply('%s is an invalid verification code' % body.lower())
             user.phone_number = number
             user.save()
-            return HttpResponse("""
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Response>
-                    <Sms>Hello %s! You can now report squirrels by texting a location to this number.</Sms>
-                </Response>
-            """ % user.name)
+            return twilio_reply(
+                'Hello %s! You can now report squirrels by texting a location to this number' % user.name
+            )
         else:
-            return HttpResponse('''<?xml version="1.0" encoding="UTF-8"?>
-                <Response>
-                    <Sms>You need to send a verification code for your accent.</Sms>
-                </Response>''')
+            return twilio_reply('You need to send a verification code for your account')
 
 def twilio_sms_from_user(user, body):
     # We don't geocode anything that's a phone_number_token
     if Spotter.objects.filter(phone_number_token = body.lower()).exists():
-        return HttpResponse("""
-            <?xml version="1.0" encoding="UTF-8"?>
-            <Response>
-                <Sms>You have already sent us your registration code!</Sms>
-            </Response>
-        """)
+        return twilio_reply('You have already sent us your registration code!')
 
     location = geocode(body)
     if location:
         spot = create_spot(user, location['latitude'], location['longitude'])
-        return HttpResponse("""
-            <?xml version="1.0" encoding="UTF-8"?>
-            <Response>
-                <Sms>Squirrel spotted! http://www.squirrelspotter.com/spot/%s/</Sms>
-            </Response>
-        """ % spot.pk)
+        return twilio_reply(
+            'Squirrel spotted! http://www.squirrelspotter.com/spot/%s/' % spot.pk
+        )
     else:
-        return HttpResponse("""
-            <?xml version="1.0" encoding="UTF-8"?>
-            <Response>
-                <Sms>Sorry, that location didn't work - please try again</Sms>
-            </Response>
-        """)
+        return twilio_reply("Sorry, that location didn't work - please try again")
 
 def geocode(text):
     url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
@@ -246,3 +221,11 @@ def geocode(text):
         'latitude': latitude,
         'longitude': longitude,
     }
+
+def twilio_reply(message):
+    return HttpResponse(("""
+        <?xml version="1.0" encoding="UTF-8"?>
+            <Response>
+                <Sms>%s</Sms>
+            </Response>
+    """ % escape(message)).strip(), content_type='text/xml')
