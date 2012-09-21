@@ -27,7 +27,8 @@ jQuery(function($) {
 
 {% if not user %}
 	<div id="login-flow">
-		<fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button>
+		<!-- <fb:login-button perms="email,publish_actions" show-faces="true"></fb:login-button -->
+		<a href="/login/"><img src="http://www.bebo.com/img/facebook-login.png"></a>
 	</div>
 {% else %}
 	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
