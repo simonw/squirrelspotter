@@ -178,21 +178,21 @@ def twilio_sms(request):
             except Spotter.DoesNotExist:
                 return HttpResponse('''<?xml version="1.0" encoding="UTF-8"?>
                 <Response>
-                    <Sms from="+442033221149" to="%s">%s is an invalid verification code.</Sms>
-                </Response>''' % (number, body.lower()))
+                    <Sms>%s is an invalid verification code.</Sms>
+                </Response>''' % body.lower())
             user.phone_number = number
             user.save()
             return HttpResponse("""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <Response>
-                    <Sms from="+442033221149" to="%s">Hello %s! You can now report squirrels by texting a location to this number.</Sms>
+                    <Sms>Hello %s! You can now report squirrels by texting a location to this number.</Sms>
                 </Response>
-            """ % (number, user.name))
+            """ % user.name)
         else:
             return HttpResponse('''<?xml version="1.0" encoding="UTF-8"?>
                 <Response>
-                    <Sms from="+442033221149" to="%s">You need to send a verification code for your accent.</Sms>
-                </Response>''' % number)
+                    <Sms>You need to send a verification code for your accent.</Sms>
+                </Response>''')
 
 def twilio_sms_from_user(user, body):
     location = geocode(body)
@@ -201,18 +201,22 @@ def twilio_sms_from_user(user, body):
         return HttpResponse("""
             <?xml version="1.0" encoding="UTF-8"?>
             <Response>
-                <Sms from="+442033221149" to="%s">Squirrel spotted! http://www.squirrelspotter.com/spot/%s/</Sms>
+                <Sms>Squirrel spotted! http://www.squirrelspotter.com/spot/%s/</Sms>
             </Response>
-        """ % (user.phone_number, spot.pk))
+        """ % spot.pk)
     else:
         return HttpResponse("""
             <?xml version="1.0" encoding="UTF-8"?>
             <Response>
-                <Sms from="+442033221149" to="%s">Sorry, that location didn't work - please try again</Sms>
+                <Sms>Sorry, that location didn't work - please try again</Sms>
             </Response>
-        """ % user.phone_number)
+        """)
 
 def geocode(text):
+    # We don't geocode anything that's a phone_number_token
+    if Spotter.objects.filter(phone_number_token = text.lower()).exists():
+        return None
+
     url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
         "q": text,
         "appid": "[yourappidhere]",
