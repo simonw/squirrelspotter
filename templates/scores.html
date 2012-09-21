@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}High scores{% endblock %}
+
+{% block content %}
+
+<table>
+{% for score in scores.data %}
+	<tr><td>{{ score.user.name }}</td><td>{{ score.score }}</td></tr>
+{% endfor %}
+</table>
+
+{% endblock %}
+
+{% comment %}
+{u'data': [{u'application': {u'id': u'468132099884285',
+    u'name': u'Squirrel Spotter',
+    u'namespace': u'squirrelspotter'},
+   u'score': 1,
+   u'user': {u'id': u'666590500', u'name': u'Simon Willison'}},
+  {u'application': {u'id': u'468132099884285',
+    u'name': u'Squirrel Spotter',
+    u'namespace': u'squirrelspotter'},
+   u'score': 0,
+   u'user': {u'id': u'507652433', u'name': u'Natalie Downe'}}]}
+{% endcomment %}
