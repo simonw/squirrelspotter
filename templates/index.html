@@ -39,6 +39,7 @@ jQuery(function($) {
 		<div class="fb-login-button" data-show-faces="true" data-width="200" data-max-rows="1" data-perms="email,publish_actions"></div>
 		{% endcomment %}
 		<div><center><a href="/login/"><img src="http://lanyrd-team-screenshots.s3.amazonaws.com/www.squirrelspotter.com_login2_-20120921-200640.png" alt="Log In with Facebook"></a></center></div>
+		<iframe src="//www.facebook.com/plugins/facepile.php?app_id=468132099884285&amp;action&amp;size=medium&amp;max_rows=1&amp;width=300&amp;colorscheme=light&amp;appId=277251005633564" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:300px;" allowTransparency="true"></iframe>
 	</div>
 {% else %}
 	<form id="spotted_form" action="/spotted/" method="POST">{% csrf_token %}
