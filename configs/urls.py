@@ -1,28 +1,27 @@
-from django.conf.urls import patterns, url, include
-from django.conf import settings
 from django.contrib import admin
-admin.autodiscover()
+from django.urls import re_path
+from django.conf import settings
 
-urlpatterns = patterns('',
-    url(r'^$', 'spotter.views.index'),
-    url(r'^login/$', 'spotter.views.login'),
-    url(r'^login2/$', 'spotter.views.login2'),
-    url(r'^credits/$', 'spotter.views.credits'),
-    url(r'^debug/$', 'spotter.views.debug'),
-    url(r'^scores/$', 'spotter.views.scores'),
-    url(r'^login/done/$', 'spotter.views.done'),
-    url(r'^logout/$', 'spotter.views.logout'),
+import spotter.views
 
-    url(r'^spot/(\d+)/$', 'spotter.views.spot'),
-    url(r'^spotted/$', 'spotter.views.spotted'),
+urlpatterns = [
+    re_path(r'^$', spotter.views.index),
+    re_path(r'^login/$', spotter.views.login),
+    re_path(r'^login2/$', spotter.views.login2),
+    re_path(r'^debug/$', spotter.views.debug),
+    re_path(r'^scores/$', spotter.views.scores),
+    re_path(r'^login/done/$', spotter.views.done),
+    re_path(r'^logout/$', spotter.views.logout),
 
-    url(r'^twilio/sms/$', 'spotter.views.twilio_sms'),
+    re_path(r'^spot/(\d+)/$', spotter.views.spot),
+    re_path(r'^spotted/$', spotter.views.spotted),
 
-    url(r'^robots\.txt$', 'spotter.views.robots_txt'),
-    url(r'^channel\.html$', 'spotter.views.channel_html'),
-    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.STATIC_ROOT
-    }),
+    re_path(r'^twilio/sms/$', spotter.views.twilio_sms),
 
-    (r'^admin-peeps/', include(admin.site.urls)),
-)
+    re_path(r'^robots\.txt$', spotter.views.robots_txt),
+    re_path(r'^channel\.html$', spotter.views.channel_html),
+    # path(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+    #     'document_root': settings.STATIC_ROOT
+    # }),
+]
+

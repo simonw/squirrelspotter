@@ -9,8 +9,12 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.db import transaction
 from xml.etree import ElementTree as ET
 import urllib, requests, cgi, datetime, json
-import geohash
+from .geohash import encode
 from xml.sax.saxutils import escape
+
+import hashlib
+import random
+
 
 signer = Signer()
 
@@ -39,18 +43,18 @@ def debug(request):
     user = user_from_request(request)
     return HttpResponse(repr(user.__dict__ if user else None), content_type='text/plain')
 
-@transaction.commit_manually
+
 def create_spot(user, latitude, longitude, coords_json=''):
     spot = Spot.objects.create(
         spotter = user,
         latitude = latitude,
         longitude = longitude,
         coords_json = coords_json,
-        geohash = geohash.encode(float(latitude), float(longitude)),
+        geohash = encode(float(latitude), float(longitude)),
         location_name = reverse_geocode(latitude, longitude),
     )
-    transaction.commit() # So facebook crawler can see it
     return spot
+
 
 @csrf_protect
 def spotted(request):
@@ -77,7 +81,7 @@ def scores(request):
     user = user_from_request(request)
     if not user:
         return HttpResponseRedirect('/login/')
-    scores = requests.get(SCORES_URL + '?' + urllib.urlencode({
+    scores = requests.get(SCORES_URL + '?' + urllib.parse.urlencode({
         'access_token': user.fb_access_token
     })).json
     return render(request, 'scores.html', {
@@ -95,7 +99,7 @@ def channel_html(request):
     return HttpResponse('<script src="//connect.facebook.net/en_US/all.js"></script>')
 
 def login(request):
-    fb_login_uri = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode({
+    fb_login_uri = "https://www.facebook.com/dialog/oauth?" + urllib.parse.urlencode({
         'client_id': settings.FB_APP_ID,
         'redirect_uri': REDIRECT_URI % request.META['HTTP_HOST'],
         'scope': 'email,publish_actions',
@@ -113,7 +117,7 @@ def logout(request):
 
 def done(request):
     code = request.GET['code']
-    url = "https://graph.facebook.com/oauth/access_token?" + urllib.urlencode({
+    url = "https://graph.facebook.com/oauth/access_token?" + urllib.parse.urlencode({
         'client_id': settings.FB_APP_ID,
         'redirect_uri': REDIRECT_URI % request.META['HTTP_HOST'],
         'client_secret': settings.FB_APP_SECRET,
@@ -138,6 +142,8 @@ def done(request):
     spotter.fb_access_token = access_token
     spotter.fb_access_token_expires = expires_at
     spotter.last_login = datetime.datetime.utcnow()
+    if not spotter.phone_number_token:
+        spotter.phone_number_token = hashlib.sha1(str(random.random())).hexdigest()[:8]
     spotter.save()
 
     response = HttpResponseRedirect('/')
@@ -157,7 +163,7 @@ def user_from_request(request):
         return None
 
 def reverse_geocode(latitude, longitude):
-    url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
+    url = "http://where.yahooapis.com/geocode?" + urllib.parse.urlencode({
         "q": "%s,%s" % (latitude, longitude),
         "gflags": "R",
         "appid": "[yourappidhere]",
@@ -165,7 +171,7 @@ def reverse_geocode(latitude, longitude):
     try:
         et = ET.fromstring(requests.get(url, timeout=3).text)
         d = dict([(e.tag, e.text) for e in et.find('Result')])
-    except Exception, e:
+    except Exception as e:
         return None
     prefs = ('neighborhood', 'city', 'county', 'state', 'country')
     for pref in prefs:
@@ -214,13 +220,13 @@ def twilio_sms_from_user(user, body):
         return twilio_reply("Sorry, that location didn't work - please try again")
 
 def geocode(text):
-    url = "http://where.yahooapis.com/geocode?" + urllib.urlencode({
+    url = "http://where.yahooapis.com/geocode?" + urllib.parse.urlencode({
         "q": text,
         "appid": "[yourappidhere]",
     })
     try:
         et = ET.fromstring(requests.get(url, timeout=3).text)
-    except Exception, e:
+    except Exception as e:
         return None
 
     if et.find('Error').text != '0':
